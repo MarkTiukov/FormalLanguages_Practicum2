@@ -2,10 +2,9 @@ rule_separator = "->"
 
 
 class Rule:
-
     def __init__(self, rule=None) -> None:
         super().__init__()
-        if (rule == None):
+        if rule is None:
             self.begin = ' '
         else:
             separator_position = rule.find(rule_separator)
@@ -20,5 +19,16 @@ class Rule:
 
 
 class Grammar:
-    def __init__(self) -> None:
+    def __init__(self, rules=[], alphabet={'a', 'b', 'c'}) -> None:
         super().__init__()
+        self.rules = rules
+        self.alphabet = alphabet
+
+    def addRule(self, rule: Rule) -> None:
+        self.rules.append(rule)
+
+    def getRule(self, begin) -> list:
+        appropriateRules = list()
+        for rule in self.rules:
+            appropriateRules.append(rule)
+        return appropriateRules
