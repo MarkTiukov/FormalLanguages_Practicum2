@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import Parser
 from Grammar import Rule, Grammar
-from Parser import Situation
+from Parser import Situation, doesWordBelongToGrammar
 
 
 class RuleTests(unittest.TestCase):
@@ -97,28 +97,49 @@ class ParserTests(unittest.TestCase):
                              ending_rule],
                       alphabet=alphabet)
 
-    situations1 = [[Situation(initiative_rule, 0, 0)]]
+    situations1 = [[Situation(initiative_rule, 0, 0)], []]
     situations2 = [[Situation(initiative_rule, 0, 0),
                     Situation(left_rule, 0, 0),
                     Situation(right_rule, 0, 0),
-                    Situation(ending_rule, 0, 0)]]
+                    Situation(ending_rule, 0, 0)], []]
     situations3 = [[Situation(initiative_rule, 0, 0),
                     Situation(left_rule, 0, 0),
                     Situation(right_rule, 0, 0),
                     Situation(ending_rule, 0, 0),
                     Situation(initiative_rule, 1, 0),
-                    Situation(right_rule, 1, 0)]]
+                    Situation(right_rule, 1, 0)], []]
+    situations4 = [[Situation(initiative_rule, 0, 0),
+                    Situation(left_rule, 0, 0),
+                    Situation(right_rule, 0, 0),
+                    Situation(ending_rule, 0, 0),
+                    Situation(initiative_rule, 1, 0),
+                    Situation(right_rule, 1, 0)],
+                   [Situation(left_rule, 1, 0),
+                    Situation(right_rule, 2, 0)]]
 
     def testPredict(self):
-        parser = Parser
-        parser.situations = self.situations1.copy()
-        parser.predict(0, self.grammar)
-        self.assertEqual(parser.situations, self.situations2)
+        Parser.situations = self.situations1.copy()
+        Parser.predict(0, self.grammar)
+        self.assertEqual(Parser.situations, self.situations2)
 
     def testComplete(self):
         Parser.situations = deepcopy(self.situations2)
         Parser.complete(0)
         self.assertEqual(Parser.situations, self.situations3)
+
+    def testScan(self):
+        Parser.situations = deepcopy(self.situations3)
+        Parser.scan(0, '(')
+        self.assertEqual(Parser.situations, self.situations4)
+
+    def testGenerateSituation(self):
+        Parser.generateSituations(self.grammar, ")")
+        self.assertEqual(Parser.situations, self.situations3)
+
+    def testWholeAlgorithm(self):
+        self.assertTrue(doesWordBelongToGrammar("((()())())", self.grammar))
+        self.assertFalse(doesWordBelongToGrammar("((()()()())", self.grammar))
+
 
 if __name__ == '__main__':
     unittest.main()
