@@ -1,5 +1,7 @@
 import unittest
+from copy import deepcopy
 
+import Parser
 from Grammar import Rule, Grammar
 from Parser import Situation
 
@@ -80,6 +82,43 @@ class SituationTests(unittest.TestCase):
         self.assertTrue(self.situation3 == self.situation3_copy)
         self.assertFalse(self.situation3 == self.situation4)
 
+
+class ParserTests(unittest.TestCase):
+    alphabet = {'(', ')'}
+
+    initiative_rule = Rule("U->S")
+    left_rule = Rule("S->(S)S")
+    right_rule = Rule("S->S(S)")
+    ending_rule = Rule("S->")
+
+    grammar = Grammar(rules=[initiative_rule,
+                             left_rule,
+                             right_rule,
+                             ending_rule],
+                      alphabet=alphabet)
+
+    situations1 = [[Situation(initiative_rule, 0, 0)]]
+    situations2 = [[Situation(initiative_rule, 0, 0),
+                    Situation(left_rule, 0, 0),
+                    Situation(right_rule, 0, 0),
+                    Situation(ending_rule, 0, 0)]]
+    situations3 = [[Situation(initiative_rule, 0, 0),
+                    Situation(left_rule, 0, 0),
+                    Situation(right_rule, 0, 0),
+                    Situation(ending_rule, 0, 0),
+                    Situation(initiative_rule, 1, 0),
+                    Situation(right_rule, 1, 0)]]
+
+    def testPredict(self):
+        parser = Parser
+        parser.situations = self.situations1.copy()
+        parser.predict(0, self.grammar)
+        self.assertEqual(parser.situations, self.situations2)
+
+    def testComplete(self):
+        Parser.situations = deepcopy(self.situations2)
+        Parser.complete(0)
+        self.assertEqual(Parser.situations, self.situations3)
 
 if __name__ == '__main__':
     unittest.main()
