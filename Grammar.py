@@ -21,6 +21,9 @@ class Grammar:
         self.rules = rules
         self.alphabet = alphabet
 
+    def __eq__(self, o: object) -> bool:
+        return self.rules == o.rules
+
     def addRule(self, rule: Rule) -> None:
         self.rules.append(rule)
 
