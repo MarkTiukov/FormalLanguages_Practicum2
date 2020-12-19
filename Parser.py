@@ -15,9 +15,7 @@ class Situation:
         return self.dot_position == len(self.rule.end)
 
     def getCurrentSymbol(self) -> str:
-        # print("rule end == '", self.rule.end, "' with length ;   position == ", self.dot_position, sep='')
         return self.rule.end[self.dot_position] if len(self.rule.end) > self.dot_position else ""
-        # return self.rule.end[self.dot_position]
 
 
 situations = list()

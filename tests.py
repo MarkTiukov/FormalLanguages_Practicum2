@@ -1,6 +1,7 @@
 import unittest
 
 from Grammar import Rule, Grammar
+from Parser import Situation
 
 
 class RuleTests(unittest.TestCase):
@@ -15,11 +16,13 @@ class RuleTests(unittest.TestCase):
         self.assertEqual(str(self.rule1), self.rule1_representation)
 
     def testEquality(self):
-        self.assertEqual(self.rule1, self.rule1)
-        self.assertNotEqual(self.rule1, self.rule2)
+        self.assertTrue(self.rule1 == self.rule1)
+        self.assertFalse(self.rule1 == self.rule2)
 
 
 class GrammarTests(unittest.TestCase):
+    alphabet = {'(', ')'}
+
     initiative_rule_representation = "U->S"
     initiative_rule = Rule(initiative_rule_representation)
 
@@ -35,12 +38,13 @@ class GrammarTests(unittest.TestCase):
     ending_rule_representation = "S->"
     ending_rule = Rule(ending_rule_representation)
 
-    grammar1 = Grammar(rules=[initiative_rule])
+    grammar1 = Grammar(rules=[initiative_rule], alphabet=alphabet)
     grammar2 = Grammar(rules=[initiative_rule, left_rule])
     full_grammar = Grammar(rules=[initiative_rule,
                                   left_rule,
                                   right_rule,
-                                  ending_rule])
+                                  ending_rule],
+                           alphabet=alphabet)
 
     def testAddRule(self):
         self.grammar1.addRule(self.left_rule)
@@ -52,6 +56,29 @@ class GrammarTests(unittest.TestCase):
     def testGetRule(self):
         result = [self.left_rule, self.right_rule, self.ending_rule]
         self.assertEqual(self.full_grammar.getRule('S'), result)
+
+
+class SituationTests(unittest.TestCase):
+    rule = Rule("S->S(S)")
+    situation1 = Situation(rule, 4, 2)
+    situation2 = Situation(rule, 3, 2)
+    situation3 = Situation(rule, 2, 2)
+    situation3_copy = Situation(rule, 2, 2)
+
+    situation4 = Situation(Rule("S->"), 0, 0)
+
+    def testIsCompleted(self):
+        self.assertTrue(self.situation1.isCompleted())
+        self.assertFalse(self.situation2.isCompleted())
+
+    def testGetCurrentSymbol(self):
+        self.assertEqual(self.situation1.getCurrentSymbol(), '')
+        self.assertEqual(self.situation2.getCurrentSymbol(), ')')
+        self.assertEqual(self.situation3.getCurrentSymbol(), 'S')
+
+    def testEquality(self):
+        self.assertTrue(self.situation3 == self.situation3_copy)
+        self.assertFalse(self.situation3 == self.situation4)
 
 
 if __name__ == '__main__':
