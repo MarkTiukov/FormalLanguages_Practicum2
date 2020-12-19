@@ -27,5 +27,6 @@ class Grammar:
     def getRule(self, begin) -> list:
         appropriateRules = list()
         for rule in self.rules:
-            appropriateRules.append(rule)
+            if rule.begin == begin:
+                appropriateRules.append(rule)
         return appropriateRules
