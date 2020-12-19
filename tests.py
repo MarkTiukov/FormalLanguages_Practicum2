@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import Parser
 from Grammar import Rule, Grammar
-from Parser import Situation, doesWordBelongToGrammar
+from Parser import Situation, doesWordBelongToGrammar, fit, generateSituations
 
 
 class RuleTests(unittest.TestCase):
@@ -133,12 +133,18 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(Parser.situations, self.situations4)
 
     def testGenerateSituation(self):
-        Parser.generateSituations(self.grammar, ")")
+        generateSituations(self.grammar, ")")
         self.assertEqual(Parser.situations, self.situations3)
 
     def testWholeAlgorithm(self):
         self.assertTrue(doesWordBelongToGrammar("((()())())", self.grammar))
         self.assertFalse(doesWordBelongToGrammar("((()()()())", self.grammar))
+
+    def testFit(self):
+        line1 = "()"
+        line2 = ""
+        line3 = "U->S S->(S)S S->S(S) S->"
+        self.assertEqual(fit(line1, line2, line3, "((()())())()")[1], self.grammar)
 
 
 if __name__ == '__main__':

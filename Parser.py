@@ -54,7 +54,6 @@ def predict(situation_number: int, grammar: Grammar) -> None:
     for situation in situations[situation_number]:
         start_symbol = situation.getCurrentSymbol()
         for rule in grammar.getRule(start_symbol):
-            # if Situation(rule, 0, situation_number) not in situations[situation_number]:
             new_situations.append(Situation(rule, 0, situation_number))
     for situation in new_situations:
         if situation not in situations[situation_number]:
@@ -82,3 +81,17 @@ def scan(situation_number: int, symbol: str) -> None:
         if symbol == situation.getCurrentSymbol():
             situations[situation_number + 1].append(
                 Situation(situation.rule, situation.dot_position + 1, situation.begin_position))
+
+
+def fit(line1: str, line2: str, line3: str, line4: str) -> (str, Grammar):
+    alphabet = set(line1)
+    separator = line2
+    if separator == "":
+        separator = Rule.rule_separator
+    rules = [Rule(rule, separator) for rule in line3.split()]
+    grammar = Grammar(rules, alphabet)
+    return line4, grammar
+
+
+if __name__ == "__main__":
+    print("YES" if doesWordBelongToGrammar(*fit(input(), input(), input(), input())) else "NO")
